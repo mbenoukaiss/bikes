@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#333"
     tools:context=".MainActivity">
 
     <EditText
@@ -11,31 +12,37 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:autofillHints="city"
+        android:background="@drawable/search"
         android:ems="10"
         android:hint="@string/city_name_hint"
         android:inputType="textPersonName"
         android:paddingLeft="24dp"
         android:paddingTop="16dp"
         android:paddingRight="24dp"
-        android:paddingBottom="16dp"
+        android:paddingBottom="22dp"
         android:textColor="@android:color/white"
         android:textColorHint="#CCC"
+        android:drawableEnd="@drawable/ic_search"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <LinearLayout
-        android:id="@+id/city_list"
+    <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
-        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/search"></LinearLayout>
+        app:layout_constraintTop_toBottomOf="@+id/search">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:id="@+id/city_list"
+            android:orientation="vertical"/>
+    </ScrollView>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
