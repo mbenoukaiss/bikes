@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Bikes</string>
+    <string name="city_name_hint">Name of the city…</string>
+</resources>
