@@ -1,6 +1,7 @@
 package io.github.mbenoukaiss.bikes
 
 import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
@@ -42,13 +43,17 @@ class StationsActivity : Activity() {
         map.setTileSource(TileSourceFactory.MAPNIK)
         map.minZoomLevel = 5.5
 
+        //set the toolbar to the city name
+        val title = findViewById<TextView>(R.id.toolbar_title)
+        title.text = intent.getStringExtra("CITY_NAME")
+
         val stations = intent.getSerializableExtra("STATIONS") as ArrayList<Station>
         val points = ArrayList<GeoPoint>()
 
         for (station in stations) {
             val position = GeoPoint(
-                station.position.latitude.toDouble(),
-                station.position.longitude.toDouble()
+                station.position.latitude,
+                station.position.longitude
             )
 
             points.add(position)
@@ -80,6 +85,7 @@ class StationsActivity : Activity() {
         return PackageManager.PERMISSION_GRANTED == checkSelfPermission(perm)
     }
 
+    @SuppressLint("MissingPermission")
     override fun onRequestPermissionsResult(code: Int, perms: Array<out String>, res: IntArray) {
         if (code == LOCATION_REQUEST && hasPermission(ACCESS_FINE_LOCATION)) {
             val controller = map!!.controller
@@ -92,13 +98,11 @@ class StationsActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
-
         map!!.onResume()
     }
 
     override fun onPause() {
         super.onPause()
-
         map!!.onPause()
     }
 

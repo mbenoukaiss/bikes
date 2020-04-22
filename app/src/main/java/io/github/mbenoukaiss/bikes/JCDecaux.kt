@@ -3,17 +3,17 @@ package io.github.mbenoukaiss.bikes
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
+import com.android.volley.*
 import com.android.volley.Request.Method
-import com.android.volley.RequestQueue
-import com.android.volley.Response
-import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.HttpHeaderParser
 import com.android.volley.toolbox.Volley
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import io.github.mbenoukaiss.bikes.models.Contract
 import io.github.mbenoukaiss.bikes.models.Station
+import java.io.UnsupportedEncodingException
 
-class JCDecaux(private val context: Context?, private val key: String) {
+class JCDecaux(private val context: Context?, private val key: String, private val error: () -> Unit) {
 
     companion object {
         const val BASE_URL = "https://api.jcdecaux.com/vls/v3"
@@ -29,13 +29,13 @@ class JCDecaux(private val context: Context?, private val key: String) {
             "?apiKey=$key"
         }
 
-        val request = StringRequest(Method.GET, BASE_URL + urlWithKey,
+        val request = UTF8StringRequest(Method.GET, BASE_URL + urlWithKey,
             Response.Listener { response ->
                 callback.invoke(gson.fromJson(response, type))
             },
             Response.ErrorListener {
                 Log.e("JCDecaux", "Call to endpoint failed: $it")
-                Toast.makeText(context, "Failed to retrieve informations", Toast.LENGTH_LONG).show()
+                error.invoke()
             })
 
         queue.add(request)
@@ -49,8 +49,30 @@ class JCDecaux(private val context: Context?, private val key: String) {
         request("/contracts", Array<Contract>::class.java, callback)
     }
 
-    fun stationsForContract(contract: String?, callback: (Array<Station>) -> Unit) {
-        request("/stations?contract=$contract", Array<Station>::class.java, callback)
+}
+
+class UTF8StringRequest(
+    method: Int, url: String,
+    private val mListener: Response.Listener<String>,
+    errorListener: Response.ErrorListener
+) : Request<String>(method, url, errorListener) {
+
+    override fun deliverResponse(response: String) {
+        mListener.onResponse(response)
     }
 
+    override fun parseNetworkResponse(response: NetworkResponse): Response<String> {
+        var parsed: String
+        val encoding = charset(HttpHeaderParser.parseCharset(response.headers))
+
+        return try {
+            parsed = String(response.data, encoding)
+            val bytes = parsed.toByteArray(encoding)
+            parsed = String(bytes, charset("UTF-8"))
+
+            Response.success(parsed, HttpHeaderParser.parseCacheHeaders(response))
+        } catch (e: UnsupportedEncodingException) {
+            Response.error(ParseError(e))
+        }
+    }
 }

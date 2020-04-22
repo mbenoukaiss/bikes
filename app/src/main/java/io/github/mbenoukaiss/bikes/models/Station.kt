@@ -8,8 +8,8 @@ enum class Status {
 }
 
 class Position(
-    val latitude: Float,
-    val longitude: Float
+    val latitude: Double,
+    val longitude: Double
 ) : Serializable
 
 class Stand(
@@ -36,5 +36,5 @@ class Station(
     var lastUpdate: String,
     var totalStands: Stand,
     var mainStands: Stand,
-    var overflowStands: Stand
+    var overflowStands: Stand?
 ) : Serializable

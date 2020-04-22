@@ -1,18 +1,16 @@
 package io.github.mbenoukaiss.bikes
 
-import android.Manifest
+import OfflineCache
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
 import io.github.mbenoukaiss.bikes.models.Contract
 import io.github.mbenoukaiss.bikes.models.Station
@@ -22,7 +20,7 @@ import kotlin.collections.HashMap
 
 class MainActivity : AppCompatActivity() {
 
-    private val cities: HashMap<String, Vector<Station>> = HashMap()
+    private var cities: HashMap<String, Vector<Station>> = HashMap()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,7 +28,23 @@ class MainActivity : AppCompatActivity() {
 
         requestPermissions(arrayOf(WRITE_EXTERNAL_STORAGE), 1)
 
-        val api = JCDecaux(this, "JCDECAUX_API_KEY")
+        val cache = OfflineCache(this)
+        val api = JCDecaux(this, "JCDECAUX_API_KEY") {
+            val cities = cache.read()
+
+            val text = if(cities == null) {
+                "Failed to retrieve stations informations and no cached informations were found"
+            } else {
+                "Failed to retrieve stations, they were loaded from cache. Displayed information may be outdated"
+            }
+
+            Toast.makeText(this, text, Toast.LENGTH_LONG).show()
+
+            if(cities != null) {
+                this.cities = cities
+                initialize()
+            }
+        }
 
         api.contracts {
             //variables to avoid making API calls in loops
@@ -56,6 +70,7 @@ class MainActivity : AppCompatActivity() {
                     cities[city] = contractStations.getOrDefault(contract.name, Vector())
                 }
 
+                cache.write(cities)
                 initialize()
             }
         }
@@ -88,6 +103,7 @@ class MainActivity : AppCompatActivity() {
 
                 button.setOnClickListener {
                     val intent = Intent(this, StationsActivity::class.java)
+                    intent.putExtra("CITY_NAME", city)
                     intent.putExtra("STATIONS", stations)
 
                     startActivity(intent)
