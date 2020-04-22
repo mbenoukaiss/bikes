@@ -1,6 +1,7 @@
 package io.github.mbenoukaiss.bikes
 
 import android.Manifest
+import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
@@ -27,7 +28,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        requestPermissionsIfNecessary(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE))
+        requestPermissions(arrayOf(WRITE_EXTERNAL_STORAGE), 1)
 
         val api = JCDecaux(this, "JCDECAUX_API_KEY")
 
@@ -45,7 +46,7 @@ class MainActivity : AppCompatActivity() {
             api.stations {
                 for (station in it) {
                     val stations = contractStations.getOrPut(station.contractName) {
-                        Vector<Station> ()
+                        Vector<Station>()
                     }
 
                     stations.addElement(station)
@@ -94,24 +95,6 @@ class MainActivity : AppCompatActivity() {
 
                 list.addView(button)
             }
-        }
-    }
-
-    private fun requestPermissionsIfNecessary(permissions: Array<String>) {
-        val permissionsToRequest: ArrayList<String> = ArrayList()
-        for (permission in permissions) {
-            if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
-                // Permission is not granted
-                permissionsToRequest.add(permission)
-            }
-        }
-
-        if (permissionsToRequest.size > 0) {
-            ActivityCompat.requestPermissions(
-                this,
-                permissionsToRequest.toArray(arrayOfNulls(0)),
-                1
-            )
         }
     }
 

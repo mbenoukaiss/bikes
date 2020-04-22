@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">Bikes</string>
     <string name="city_name_hint">Search a city…</string>
+    <string name="station_name">Station name</string>
+    <string name="station_address">Station address or description</string>
+    <string name="go_to_station">Go to station</string>
+    <string name="my_position">Go to your position</string>
 </resources>
