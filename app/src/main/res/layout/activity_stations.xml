@@ -49,5 +49,5 @@
         android:layout_marginBottom="16dp"
         android:clickable="true"
         android:contentDescription="@string/my_position"
-        android:src="@drawable/ic_position" />
+        android:src="@drawable/ic_go_to_position" />
 </RelativeLayout>

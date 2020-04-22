@@ -92,7 +92,17 @@ class StationsActivity : Activity() {
             val lm = getSystemService(Context.LOCATION_SERVICE) as LocationManager
             val location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER)
 
-            controller.animateTo(GeoPoint(location!!.latitude, location!!.longitude))
+            val point = GeoPoint(location!!.latitude, location!!.longitude)
+            val position = Marker(map)
+            position.position = point
+            position.icon = resources.getDrawable(R.drawable.ic_marker, null)
+            position.setAnchor(0.5f, 1f)
+            position.setOnMarkerClickListener { _, _ -> true }
+
+            map!!.overlays.add(position)
+
+            controller.zoomTo(18.5)
+            controller.animateTo(point)
         }
     }
 

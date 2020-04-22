@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#333"
+    android:background="@color/colorPrimary"
     tools:context=".MainActivity">
 
     <EditText
@@ -21,7 +21,7 @@
         android:paddingRight="24dp"
         android:paddingBottom="22dp"
         android:textColor="@android:color/white"
-        android:textColorHint="#CCC"
+        android:textColorHint="@color/hintColor"
         android:drawableEnd="@drawable/ic_search"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

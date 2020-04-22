@@ -4,6 +4,9 @@
     <color name="colorPrimaryDark">#222</color>
     <color name="colorAccent">#004B6B</color>
 
+    <color name="textColor">#FFF</color>
+    <color name="hintColor">#CCC</color>
+
     <color name="buttonBackground">#004B6B</color>
     <color name="buttonText">#D7FDFF</color>
     <color name="markerColor">#004B6B</color>
