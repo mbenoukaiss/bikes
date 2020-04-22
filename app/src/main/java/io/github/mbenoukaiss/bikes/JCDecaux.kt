@@ -29,17 +29,16 @@ class JCDecaux(private val context: Context?, private val key: String) {
             "?apiKey=$key"
         }
 
-        val stringRequest = StringRequest(Method.GET, BASE_URL + urlWithKey,
+        val request = StringRequest(Method.GET, BASE_URL + urlWithKey,
             Response.Listener { response ->
                 callback.invoke(gson.fromJson(response, type))
             },
             Response.ErrorListener {
                 Log.e("JCDecaux", "Call to endpoint failed: $it")
                 Toast.makeText(context, "Failed to retrieve informations", Toast.LENGTH_LONG).show()
-
             })
 
-        queue.add(stringRequest)
+        queue.add(request)
     }
 
     fun stations(callback: (Array<Station>) -> Unit) {

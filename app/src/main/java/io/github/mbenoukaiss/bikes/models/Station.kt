@@ -1,5 +1,7 @@
 package io.github.mbenoukaiss.bikes.models
 
+import java.io.Serializable
+
 enum class Status {
     OPEN,
     CLOSED
@@ -8,31 +10,31 @@ enum class Status {
 class Position(
     val latitude: Float,
     val longitude: Float
-)
+) : Serializable
 
 class Stand(
     val availabilities: Availabilities,
     val capacity: Int
-)
+) : Serializable
 
 class Availabilities(
     val bikes: Int,
     val stands: Int
-)
+) : Serializable
 
 class Station(
-    val number: Int,
-    val contractName: String,
-    val name: String,
-    val address: String,
-    val position: Position,
-    val banking: Boolean,
-    val bonus: Boolean,
-    val overflow: Boolean,
-    val connected: Boolean,
-    val status: Status,
-    val lastUpdate: String,
-    val totalStands: Stand,
-    val mainStands: Stand,
-    val overflowStands: Stand
-)
+    var number: Int,
+    var contractName: String,
+    var name: String,
+    var address: String,
+    var position: Position,
+    var banking: Boolean,
+    var bonus: Boolean,
+    var overflow: Boolean,
+    var connected: Boolean,
+    var status: Status,
+    var lastUpdate: String,
+    var totalStands: Stand,
+    var mainStands: Stand,
+    var overflowStands: Stand
+) : Serializable
