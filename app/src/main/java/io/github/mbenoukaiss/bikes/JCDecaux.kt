@@ -2,7 +2,6 @@ package io.github.mbenoukaiss.bikes
 
 import android.content.Context
 import android.util.Log
-import android.widget.Toast
 import com.android.volley.*
 import com.android.volley.Request.Method
 import com.android.volley.toolbox.HttpHeaderParser
@@ -40,6 +39,7 @@ class JCDecaux(context: Context?, private val key: String, private val error: ()
             })
 
         queue.add(request)
+        queue.start()
     }
 
     /**

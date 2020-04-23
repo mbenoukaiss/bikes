@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <LinearLayout
@@ -49,5 +50,7 @@
         android:layout_marginBottom="16dp"
         android:clickable="true"
         android:contentDescription="@string/my_position"
-        android:src="@drawable/ic_go_to_position" />
+        android:backgroundTint="@color/colorAccent"
+        android:src="@drawable/ic_go_to_position"
+        app:tint="@color/textColor" />
 </RelativeLayout>

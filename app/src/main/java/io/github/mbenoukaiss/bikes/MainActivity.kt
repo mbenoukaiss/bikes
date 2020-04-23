@@ -2,6 +2,7 @@ package io.github.mbenoukaiss.bikes
 
 import OfflineCache
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
@@ -18,7 +19,7 @@ import org.apache.commons.lang3.StringUtils
 import java.util.*
 import kotlin.collections.HashMap
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : Activity() {
 
     private var cities: HashMap<String, Vector<Station>> = HashMap()
 
@@ -33,7 +34,7 @@ class MainActivity : AppCompatActivity() {
             val cities = cache.read()
 
             val text = if(cities == null) {
-                "Failed to retrieve stations informations and no cached informations were found"
+                "Failed to retrieve stations data and no cached data were found. Make sure you are connected to the internet"
             } else {
                 "Failed to retrieve stations, they were loaded from cache. Displayed information may be outdated"
             }
@@ -70,7 +71,7 @@ class MainActivity : AppCompatActivity() {
                     cities[city] = contractStations.getOrDefault(contract.name, Vector())
                 }
 
-                cache.write(cities)
+                cache.asyncWrite(cities)
                 initialize()
             }
         }

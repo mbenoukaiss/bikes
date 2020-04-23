@@ -11,7 +11,6 @@ import kotlin.collections.HashMap
 class OfflineCache(context: Context?) : SQLiteOpenHelper(context, "bikes", null, 1) {
     private var db: SQLiteDatabase? = null
 
-    @Synchronized
     override fun onCreate(db: SQLiteDatabase) {
         db.execSQL(
             """
@@ -50,7 +49,6 @@ class OfflineCache(context: Context?) : SQLiteOpenHelper(context, "bikes", null,
         )
     }
 
-    @Synchronized
     override fun onUpgrade(
         db: SQLiteDatabase,
         oldVersion: Int,
@@ -61,13 +59,18 @@ class OfflineCache(context: Context?) : SQLiteOpenHelper(context, "bikes", null,
         onCreate(db)
     }
 
-    @Synchronized
     override fun close() {
         db!!.close()
     }
 
-    @Synchronized
+    fun asyncWrite(cache: HashMap<String, Vector<Station>>) {
+        Thread {
+            write(cache)
+        }
+    }
+
     fun write(cache: HashMap<String, Vector<Station>>) {
+        db!!.beginTransaction()
         db!!.execSQL("DELETE FROM station")
         db!!.execSQL("DELETE FROM stand")
 
@@ -121,10 +124,10 @@ class OfflineCache(context: Context?) : SQLiteOpenHelper(context, "bikes", null,
             }
         }
 
+        db!!.setTransactionSuccessful()
         db!!.close()
     }
 
-    @Synchronized
     private fun stands(): SparseArray<Stand> {
         val stands = SparseArray<Stand>()
 
@@ -159,7 +162,6 @@ class OfflineCache(context: Context?) : SQLiteOpenHelper(context, "bikes", null,
         return stands
     }
 
-    @Synchronized
     fun read(): HashMap<String, Vector<Station>>? {
         val c = db!!.query(
             "station",
