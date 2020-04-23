@@ -74,8 +74,6 @@ class MainActivity : AppCompatActivity() {
                 initialize()
             }
         }
-
-
     }
 
     private fun initialize() {

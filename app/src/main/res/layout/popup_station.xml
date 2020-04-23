@@ -24,6 +24,19 @@
         android:layout_height="wrap_content"
         android:text="@string/station_address" />
 
+    <TextView
+        android:id="@+id/available_stands"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="@string/available_stands" />
+
+    <TextView
+        android:id="@+id/available_bikes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/available_bikes" />
+
     <Button
         android:id="@+id/go_to_station"
         android:layout_width="match_parent"
