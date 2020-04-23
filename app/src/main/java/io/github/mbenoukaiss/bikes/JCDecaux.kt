@@ -1,7 +1,11 @@
 package io.github.mbenoukaiss.bikes
 
 import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.Build
 import android.util.Log
+import androidx.core.content.ContextCompat.getSystemService
 import com.android.volley.*
 import com.android.volley.Request.Method
 import com.android.volley.toolbox.HttpHeaderParser
@@ -13,7 +17,11 @@ import io.github.mbenoukaiss.bikes.models.Station
 import java.io.UnsupportedEncodingException
 
 
-class JCDecaux(context: Context?, private val key: String, private val error: () -> Unit) {
+class JCDecaux(
+    private val context: Context,
+    private val key: String,
+    private val error: () -> Unit
+) {
 
     companion object {
         const val BASE_URL = "https://api.jcdecaux.com/vls/v3"
@@ -23,23 +31,43 @@ class JCDecaux(context: Context?, private val key: String, private val error: ()
     private val gson: Gson = GsonBuilder().create()
 
     private fun <T : Any?> request(url: String, type: Class<T>, callback: (T) -> Unit) {
-        val urlWithKey = url + if (url.contains("?")) {
-            "&apiKey=$key"
+        if(isNetworkAvailable()) {
+            val urlWithKey = url + if (url.contains("?")) {
+                "&apiKey=$key"
+            } else {
+                "?apiKey=$key"
+            }
+
+            val request = UTF8StringRequest(Method.GET, BASE_URL + urlWithKey,
+                Response.Listener { response ->
+                    callback.invoke(gson.fromJson(response, type))
+                },
+                Response.ErrorListener {
+                    Log.e("JCDecaux", "Call to endpoint failed: $it")
+                    error.invoke()
+                })
+
+            queue.add(request)
+            queue.start()
         } else {
-            "?apiKey=$key"
+            Log.e("JCDecaux", "No internet connection found")
+            error.invoke()
         }
+    }
 
-        val request = UTF8StringRequest(Method.GET, BASE_URL + urlWithKey,
-            Response.Listener { response ->
-                callback.invoke(gson.fromJson(response, type))
-            },
-            Response.ErrorListener {
-                Log.e("JCDecaux", "Call to endpoint failed: $it")
-                error.invoke()
-            })
+    private fun isNetworkAvailable(): Boolean {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
-        queue.add(request)
-        queue.start()
+        val nw = connectivityManager.activeNetwork ?: return false
+        val actNw = connectivityManager.getNetworkCapabilities(nw) ?: return false
+
+        return when {
+            actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+            actNw.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+            actNw.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
+            actNw.hasTransport(NetworkCapabilities.TRANSPORT_BLUETOOTH) -> true
+            else -> false
+        }
     }
 
     /**

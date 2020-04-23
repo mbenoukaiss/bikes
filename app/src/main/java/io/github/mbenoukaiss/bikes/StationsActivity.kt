@@ -11,12 +11,19 @@ import android.location.Location
 import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
-import androidx.preference.PreferenceManager
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
+import androidx.annotation.NonNull
+import androidx.preference.PreferenceManager
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.tasks.OnFailureListener
+import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import io.github.mbenoukaiss.bikes.models.Position
 import io.github.mbenoukaiss.bikes.models.Station
@@ -26,7 +33,6 @@ import org.osmdroid.util.BoundingBox
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
-import kotlin.collections.ArrayList
 
 
 class StationsActivity : Activity() {
@@ -70,9 +76,20 @@ class StationsActivity : Activity() {
     @SuppressLint("MissingPermission")
     override fun onRequestPermissionsResult(code: Int, perms: Array<out String>, res: IntArray) {
         if (code == LOCATION_REQUEST && hasPermission(ACCESS_FINE_LOCATION)) {
-            val lm = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            val client: FusedLocationProviderClient =
+                LocationServices.getFusedLocationProviderClient(this)
 
-            goToPosition(map!!, lm.getLastKnownLocation(LocationManager.GPS_PROVIDER)!!)
+            client.lastLocation
+                .addOnSuccessListener { location ->
+                    //location may still be null if GPS wasn't enabled
+                    location?.let {
+                        goToPosition(map!!, location)
+                    }
+                }
+                .addOnFailureListener {
+                    Log.e("Bikes", "Error trying to get last GPS location")
+                    Toast.makeText(this, "Failed to retrieve position", Toast.LENGTH_LONG).show()
+                }
         }
     }
 
@@ -138,8 +155,14 @@ class StationsActivity : Activity() {
 
         builder.setView(layout)
 
-        val stands = String.format(resources.getString(R.string.available_stands), st.totalStands.availabilities.stands)
-        val bikes = String.format(resources.getString(R.string.available_bikes), st.totalStands.availabilities.bikes)
+        val stands = String.format(
+            resources.getString(R.string.available_stands),
+            st.totalStands.availabilities.stands
+        )
+        val bikes = String.format(
+            resources.getString(R.string.available_bikes),
+            st.totalStands.availabilities.bikes
+        )
 
         layout.findViewById<TextView>(R.id.name).text = st.name
         layout.findViewById<TextView>(R.id.address).text = st.address
