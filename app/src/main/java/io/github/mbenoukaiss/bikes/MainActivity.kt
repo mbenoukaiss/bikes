@@ -30,7 +30,7 @@ class MainActivity : Activity() {
         requestPermissions(arrayOf(WRITE_EXTERNAL_STORAGE), 1)
 
         val cache = OfflineCache(this)
-        val api = JCDecaux(this, "JCDECAUX_API_KEY") {
+        val api = JCDecaux(this, BuildConfig.JCDECAUX_KEY) {
             val cities = cache.read()
 
             val text = if(cities == null) {

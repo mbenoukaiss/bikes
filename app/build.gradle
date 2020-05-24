@@ -1,8 +1,9 @@
 apply plugin: 'com.android.application'
-
 apply plugin: 'kotlin-android'
-
 apply plugin: 'kotlin-android-extensions'
+
+def secrets = new Properties()
+secrets.load(new FileInputStream(rootProject.file("secret.properties")))
 
 android {
     compileSdkVersion 29
@@ -14,6 +15,8 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField "String", "JCDECAUX_KEY", secrets["api.jcdecaux"]
     }
 
     buildTypes {

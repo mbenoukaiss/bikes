@@ -52,7 +52,7 @@ class StationsActivity : Activity() {
         val map = findViewById<MapView>(R.id.map)
         map.setTileSource(TileSourceFactory.MAPNIK)
         map.setMultiTouchControls(true)
-        map.zoomController.setVisibility(Visibility.NEVER)
+        map.zoomController.setVisibility(Visibility.SHOW_AND_FADEOUT)
         map.minZoomLevel = 5.5
 
         //load markers
